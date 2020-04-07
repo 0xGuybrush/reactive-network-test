@@ -56,13 +56,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     private Observable<Boolean> createInternetStatusObservable() {
-        final InternetObservingSettings settings = InternetObservingSettings
-                .builder()
-                .host("www.example.com")
-                .strategy(new SocketInternetObservingStrategy())
-                .build();
-
-        return ReactiveNetwork.observeNetworkConnectivity(getApplicationContext()).switchMapSingle(connectivity -> ReactiveNetwork.checkInternetConnectivity(settings));
+        return ReactiveNetwork
+                .observeNetworkConnectivity(getApplicationContext())
+                .switchMapSingle(connectivity -> ReactiveNetwork.checkInternetConnectivity());
     }
 
     private void toastIfNo(final boolean hasInternet) {
