@@ -26,39 +26,15 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void init(final int layout, final Class<? extends BaseActivity> targetActivity, final String heading, final String text) {
         setContentView(layout);
-        final Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(findViewById(R.id.toolbar));
 
-        final FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> {
+        this.<FloatingActionButton>findViewById(R.id.fab).setOnClickListener(view -> {
             Snackbar.make(view, heading, Snackbar.LENGTH_LONG).setAction(text, v -> {
                 Intent intent = new Intent(this, targetActivity);
                 startActivity(intent);
                 finish();
             }).show();
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -75,7 +51,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(hasInternet -> {
                     if (hasInternet) {
-                        final String still_has_internet = String.format("Still has internet. %s", hasInternet);
+                        final String still_has_internet = String.format("Still has internet? %s", hasInternet);
                         Toast.makeText(getApplicationContext(), still_has_internet, Toast.LENGTH_SHORT).show();
                     }
                 }, System.err::println)
