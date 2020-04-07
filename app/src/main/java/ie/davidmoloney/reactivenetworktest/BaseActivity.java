@@ -1,15 +1,11 @@
 package ie.davidmoloney.reactivenetworktest;
 
-import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
-import com.github.pwittchen.reactivenetwork.library.rx2.internet.observing.InternetObservingSettings;
-import com.github.pwittchen.reactivenetwork.library.rx2.internet.observing.strategy.SocketInternetObservingStrategy;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -46,19 +42,15 @@ public abstract class BaseActivity extends AppCompatActivity {
             compositeDisposable = new CompositeDisposable();
         }
 
-        final Observable<Boolean> hasInternet = createInternetStatusObservable();
+        final Observable<Boolean> hasInternet = ReactiveNetwork
+                .observeNetworkConnectivity(getApplicationContext())
+                .switchMapSingle(connectivity -> ReactiveNetwork.checkInternetConnectivity());
 
         final Disposable toastWhenHasInternet = hasInternet.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::toastIfYes, System.err::println);
         final Disposable toastWhenNoInternet = hasInternet.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::toastIfNo, System.err::println);
 
         compositeDisposable.add(toastWhenHasInternet);
         compositeDisposable.add(toastWhenNoInternet);
-    }
-
-    private Observable<Boolean> createInternetStatusObservable() {
-        return ReactiveNetwork
-                .observeNetworkConnectivity(getApplicationContext())
-                .switchMapSingle(connectivity -> ReactiveNetwork.checkInternetConnectivity());
     }
 
     private void toastIfNo(final boolean hasInternet) {
